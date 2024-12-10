@@ -7,9 +7,14 @@ export const Route = createRootRoute({
       <div className="p-2 flex gap-2">
         <Link to="/" className="[&.active]:font-bold">
           Home
-        </Link>{" "}
+        </Link>
+        {" | "}
         <Link to="/sign-up" className="[&.active]:font-bold">
           Sign up
+        </Link>
+        {" | "}
+        <Link to="/login" className="[&.active]:font-bold">
+          Sign in
         </Link>
       </div>
       <hr />
