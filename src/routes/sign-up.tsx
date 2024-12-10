@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FormEvent, useState } from "react";
 
 export const Route = createFileRoute("/sign-up")({
@@ -7,6 +7,7 @@ export const Route = createFileRoute("/sign-up")({
 
 function RouteComponent() {
   const [username, setUsername] = useState("");
+  const navigate = useNavigate();
 
   const signUp = (newUsername: string) => {
     const storedUsers = localStorage.getItem("users");
@@ -21,6 +22,9 @@ function RouteComponent() {
     users.push(newUsername.trim());
 
     localStorage.setItem("users", JSON.stringify(users));
+    setUsername("");
+
+    navigate({ to: "/login" });
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -30,7 +34,7 @@ function RouteComponent() {
 
   return (
     <div>
-      Hello "/sign-up"!
+      Sign up page
       <form onSubmit={handleSubmit}>
         <label htmlFor="username">Username</label>
         <input
