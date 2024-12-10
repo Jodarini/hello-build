@@ -13,10 +13,10 @@ Once logged in users should have a section where their repositories and favorite
 
 # User Stories
 
-- As a user I want to be able to Sign Up to the web app
-  - As a user I want to be able to Login after Signing Up into the app
-- As a user I want to list all repositories under my Github user
-- As a user I want to search through all my repositories and create a list of my favorite repos
+- [x] As a user I want to be able to Sign Up to the web app
+  - [] As a user I want to be able to Login after Signing Up into the app
+- [] As a user I want to list all repositories under my Github user
+- [] As a user I want to search through all my repositories and create a list of my favorite repos
 
 # React + TypeScript + Vite
 
