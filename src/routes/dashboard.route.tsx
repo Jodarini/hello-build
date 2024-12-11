@@ -1,6 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useAuth } from "../auth";
 import { useEffect, useState } from "react";
+import { Repositories } from "../components/Repositories";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: ({ context, location }) => {
@@ -17,48 +18,11 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function RouteComponent() {
-  const [repos, setRepos] = useState([]);
   const { username } = useAuth();
-  const getUsersRepositories = async () => {
-    const GITHUB_ENDPOINT = "https://api.github.com/graphql";
-    const TOKEN = "";
-
-    const query = `{
-      user(login: "${username}") {
-        name
-        repositories(last: 5) {
-          nodes {
-            name
-          }
-        }
-      }
-    }`;
-
-    const response = await fetch(GITHUB_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${TOKEN}`,
-      },
-      body: JSON.stringify({ query }),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    setRepos(data.data.user.repositories.nodes);
-  };
-
-  useEffect(() => {
-    getUsersRepositories().catch((error) => console.error("Error:", error));
-  }, []);
   return (
     <div>
       Hello {username}!
-      {repos.map((repo) => (
-        <div key={repo.id}>{repo.name}</div>
-      ))}
+      <Repositories username={username!} />
     </div>
   );
 }
