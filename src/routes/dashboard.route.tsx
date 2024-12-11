@@ -1,6 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useAuth } from "../auth";
-import { useEffect, useState } from "react";
 import { Repositories } from "../components/Repositories";
 
 export const Route = createFileRoute("/dashboard")({
@@ -21,7 +20,6 @@ function RouteComponent() {
   const { username } = useAuth();
   return (
     <div>
-      Hello {username}!
       <Repositories username={username!} />
     </div>
   );

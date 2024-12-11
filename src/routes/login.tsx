@@ -8,14 +8,13 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const [username, setUsername] = useState("");
-  const navigate = useNavigate();
   const auth = useAuth();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const isSignedIn = auth.signIn(username);
     if (isSignedIn) {
-      navigate({ to: "/dashboard" });
+      auth.username = username;
     }
   };
 

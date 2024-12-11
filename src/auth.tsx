@@ -1,5 +1,7 @@
 import React, { createContext, useState } from "react";
 
+const CLIENT_ID = "Ov23liLxtAgLqEAyYmGN";
+
 export interface AuthContext {
   username: string | null;
   isAuthenticated: boolean;
@@ -11,7 +13,7 @@ const AuthContext = createContext<AuthContext | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [username, setUsername] = useState<string | null>(null);
-  const isAuthenticated = !!username;
+  let isAuthenticated = username ? true : false;
 
   const signUp = (newUsername: string) => {
     const storedUsers = localStorage.getItem("users");
@@ -33,10 +35,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (users.some((user) => user === loginName)) {
       setUsername(loginName);
-      alert("users logged in");
+      const link = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=http://localhost:5173/auth&login=${loginName}`;
+      isAuthenticated = true;
+      setUsername(loginName);
+      window.location.assign(link);
       return true;
     }
-    alert("users not logged in");
+    alert("User has not signed up");
     return false;
   };
 
