@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FormEvent, useState } from "react";
+import { useAuth } from "../auth";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -8,22 +9,14 @@ export const Route = createFileRoute("/login")({
 function Login() {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
-
-  const signIn = () => {
-    const storedUsers = localStorage.getItem("users");
-    const users: string[] = storedUsers ? JSON.parse(storedUsers) : [];
-
-    if (users.some((user) => user === username)) {
-      alert("users logged in");
-      navigate({ to: "/" });
-      return;
-    }
-    alert("users not logged in");
-  };
+  const auth = useAuth();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    signIn();
+    const isSignedIn = auth.signIn(username);
+    if (isSignedIn) {
+      navigate({ to: "/dashboard" });
+    }
   };
 
   return (

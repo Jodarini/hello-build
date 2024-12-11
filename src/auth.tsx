@@ -1,21 +1,20 @@
 import React, { createContext, useState } from "react";
 
 export interface AuthContext {
-  user: string | null;
+  username: string | null;
   isAuthenticated: boolean;
   signUp: (username: string) => void;
-  signIn: () => void;
+  signIn: (username: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContext | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<string | null>(null);
-  const isAuthenticated = !!user;
+  const [username, setUsername] = useState<string | null>(null);
+  const isAuthenticated = !!username;
 
   const signUp = (newUsername: string) => {
     const storedUsers = localStorage.getItem("users");
-
     const users: string[] = storedUsers ? JSON.parse(storedUsers) : [];
 
     if (users.some((user) => user === newUsername)) {
@@ -24,16 +23,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     users.push(newUsername.trim());
-
     localStorage.setItem("users", JSON.stringify(users));
-    setUser(null);
+    setUsername(null);
   };
-  const signIn = () => {
-    alert("it worked");
+
+  const signIn = (loginName: string) => {
+    const storedUsers = localStorage.getItem("users");
+    const users: string[] = storedUsers ? JSON.parse(storedUsers) : [];
+
+    if (users.some((user) => user === loginName)) {
+      setUsername(loginName);
+      alert("users logged in");
+      return true;
+    }
+    alert("users not logged in");
+    return false;
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, signUp, signIn }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, username: username, signUp, signIn }}
+    >
       {children}
     </AuthContext.Provider>
   );
