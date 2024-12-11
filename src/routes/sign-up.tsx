@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FormEvent, useState } from "react";
+import { useAuth } from "../auth";
 
 export const Route = createFileRoute("/sign-up")({
   component: RouteComponent,
@@ -7,29 +8,13 @@ export const Route = createFileRoute("/sign-up")({
 
 function RouteComponent() {
   const [username, setUsername] = useState("");
+  const auth = useAuth();
   const navigate = useNavigate();
-
-  const signUp = (newUsername: string) => {
-    const storedUsers = localStorage.getItem("users");
-
-    const users: string[] = storedUsers ? JSON.parse(storedUsers) : [];
-
-    if (users.some((user) => user === newUsername)) {
-      alert("User already exists");
-      return;
-    }
-
-    users.push(newUsername.trim());
-
-    localStorage.setItem("users", JSON.stringify(users));
-    setUsername("");
-
-    navigate({ to: "/login" });
-  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    signUp(username);
+    auth.signUp(username);
+    navigate({ to: "/login" });
   };
 
   return (
