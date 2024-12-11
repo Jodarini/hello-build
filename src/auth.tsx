@@ -1,7 +1,5 @@
 import React, { createContext, useState } from "react";
 
-const CLIENT_ID = "Ov23liLxtAgLqEAyYmGN";
-
 export interface AuthContext {
   username: string | null;
   isAuthenticated: boolean;
@@ -36,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (users.some((user) => user === loginName)) {
       setUsername(loginName);
-      const link = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=http://localhost:5173/auth&login=${loginName}`;
+      const link = `https://github.com/login/oauth/authorize?client_id=${import.meta.env.VITE_APP_CLIENT_ID}&redirect_uri=http://localhost:5173/auth&login=${loginName}`;
       isAuthenticated = true;
       setUsername(loginName);
       window.location.assign(link);
