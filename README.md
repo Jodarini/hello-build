@@ -15,7 +15,7 @@ Once logged in users should have a section where their repositories and favorite
 
 - [x] As a user I want to be able to Sign Up to the web app
   - [x] As a user I want to be able to Login after Signing Up into the app
-- [] As a user I want to list all repositories under my Github user
+- [x] As a user I want to list all repositories under my Github user
 - [] As a user I want to search through all my repositories and create a list of my favorite repos
 
 # React + TypeScript + Vite
