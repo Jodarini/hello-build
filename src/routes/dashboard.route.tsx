@@ -24,12 +24,10 @@ function RouteComponent() {
     const TOKEN = "";
 
     const query = `{
-      viewer{
-        login
+      user(login: "${username}") {
         name
-        repositories(last: 5){
-          nodes{
-            id
+        repositories(last: 5) {
+          nodes {
             name
           }
         }
@@ -49,8 +47,7 @@ function RouteComponent() {
     }
 
     const data = await response.json();
-    console.log(data.data.viewer.repositories);
-    setRepos(data.data.viewer.repositories.nodes);
+    setRepos(data.data.user.repositories.nodes);
   };
 
   useEffect(() => {
