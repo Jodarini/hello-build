@@ -5,7 +5,7 @@ const CLIENT_ID = "Ov23liLxtAgLqEAyYmGN";
 export interface AuthContext {
   username: string | null;
   isAuthenticated: boolean;
-  signUp: (username: string) => void;
+  signUp: (username: string) => boolean;
   signIn: (username: string) => boolean;
 }
 
@@ -21,12 +21,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (users.some((user) => user === newUsername)) {
       alert("User already exists");
-      return;
+      return false;
     }
 
     users.push(newUsername.trim());
     localStorage.setItem("users", JSON.stringify(users));
     setUsername(null);
+    return true;
   };
 
   const signIn = (loginName: string) => {
