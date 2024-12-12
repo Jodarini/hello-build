@@ -17,6 +17,7 @@ export const Repositories = ({ username }: { username: string }) => {
   const [favRepos, setFavRepos] = useState<Repository[] | undefined>([]);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState("");
+  const [user, setUser] = useState();
 
   useEffect(() => {
     const checkAccessToken = () => {
@@ -42,7 +43,8 @@ export const Repositories = ({ username }: { username: string }) => {
     try {
       const userData = await getUser();
       if (userData) {
-        const repos = await getUsersRepositories(userData.login);
+        console.log(userData.data.viewer.login);
+        const repos = await getUsersRepositories(userData.data.viewer.login);
         setRepositories(repos);
       }
     } catch (error) {
@@ -51,6 +53,34 @@ export const Repositories = ({ username }: { username: string }) => {
   };
 
   const getUser = async () => {
+    const GITHUB_ENDPOINT = "https://api.github.com/graphql";
+
+    const query = `{
+      viewer {
+        login
+        avatarUrl
+      }
+    }`;
+
+    const response = await fetch(GITHUB_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    setUser(data.data.viewer);
+    return data;
+  };
+
+  const getUser2 = async () => {
     const response = await fetch("https://api.github.com/user", {
       headers: {
         "Content-Type": "application/json",
@@ -70,7 +100,7 @@ export const Repositories = ({ username }: { username: string }) => {
 
     const query = `{
       user(login: "${login}") {
-        repositories(last: 10) {
+        repositories(last: 50) {
           nodes {
             id
             name
@@ -106,6 +136,10 @@ export const Repositories = ({ username }: { username: string }) => {
 
   return (
     <div className="py-4">
+      <div className="flex gap-2">
+        <img src={user.avatarUrl} alt="" className="size-5 rounded-full" />
+        <span>Hello {user.login}!</span>
+      </div>
       <div className="flex flex-col md:flex-row w-full md:justify-between">
         <div>
           <h2 className="font-bold text-[#172c45] text-2xl sm:text-1xl lg:text-3xl">
