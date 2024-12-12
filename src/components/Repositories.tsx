@@ -50,7 +50,6 @@ export const Repositories = ({ username }: { username: string }) => {
     try {
       const userData = await getUser();
       if (userData) {
-        console.log(userData.data.viewer.login);
         const repos = await getUsersRepositories(userData.data.viewer.login);
         setRepositories(repos);
       }
@@ -138,7 +137,7 @@ export const Repositories = ({ username }: { username: string }) => {
   );
 
   return (
-    <div className="py-4">
+    <div className="flex flex-col gap-4 py-4">
       <div className="flex gap-2">
         {user && (
           <>
@@ -151,9 +150,9 @@ export const Repositories = ({ username }: { username: string }) => {
           </>
         )}
       </div>
-      <div className="flex flex-col md:flex-row w-full md:justify-between">
-        <div>
-          <h2 className="font-bold text-[#172c45] text-2xl sm:text-1xl lg:text-3xl">
+      <div className="flex flex-col md:flex-row w-full md:justify-around">
+        <div className="min-w-full md:min-w-72">
+          <h2 className="font-bold text-[#172c45] text-2xl sm:text-1xl lg:text-3xl mb-2">
             Your repos
           </h2>
           <input
@@ -189,21 +188,24 @@ export const Repositories = ({ username }: { username: string }) => {
                 key={repo.id}
                 name={repo.name}
                 setFavRepos={setFavRepos}
+                checkbox
               />
             ))
           ) : (
             "This user has no repos"
           )}
         </div>
-        <div>
-          <h2 className="font-bold text-[#172c45] text-2xl sm:text-1xl lg:text-3xl">
+        <div className="min-w-full md:min-w-72">
+          <h2 className="font-bold text-[#172c45] text-2xl sm:text-1xl lg:text-3xl mb-2">
             Favorites
           </h2>
           {favRepos && favRepos.length > 0
             ? favRepos.map((repo) => (
-                <div key={repo.id + "fav"} className="flex gap-2">
-                  <p>{repo.name}</p>
-                </div>
+                <Repository
+                  key={repo.id + "fav"}
+                  name={repo.name}
+                  setFavRepos={setFavRepos}
+                />
               ))
             : "No favorites yet 😢"}
         </div>
@@ -215,9 +217,11 @@ export const Repositories = ({ username }: { username: string }) => {
 const Repository = ({
   name,
   setFavRepos,
+  checkbox,
 }: {
   name: string;
   setFavRepos: Dispatch<SetStateAction<Repository[]>>;
+  checkbox: boolean;
 }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -235,7 +239,9 @@ const Repository = ({
     <div className="py-4 px-2 bg-slate-50 shadow mb-2">
       <div className="flex gap-2 justify-between">
         <p>{name}</p>
-        <input type="checkbox" checked={isFavorite} onChange={handleChange} />
+        {checkbox && (
+          <input type="checkbox" checked={isFavorite} onChange={handleChange} />
+        )}
       </div>
     </div>
   );
