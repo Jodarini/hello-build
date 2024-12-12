@@ -10,6 +10,12 @@ interface Repository {
   id: string;
   name: string;
 }
+
+interface User {
+  login: string;
+  avatarUrl: string;
+}
+
 export const Repositories = ({ username }: { username: string }) => {
   const [repositories, setRepositories] = useState<Repository[] | undefined>(
     [],
@@ -17,7 +23,7 @@ export const Repositories = ({ username }: { username: string }) => {
   const [favRepos, setFavRepos] = useState<Repository[] | undefined>([]);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState("");
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
     const checkAccessToken = () => {
@@ -80,21 +86,6 @@ export const Repositories = ({ username }: { username: string }) => {
     return data;
   };
 
-  const getUser2 = async () => {
-    const response = await fetch("https://api.github.com/user", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user data");
-    }
-
-    return response.json();
-  };
-
   const getUsersRepositories = async (login: string) => {
     const GITHUB_ENDPOINT = "https://api.github.com/graphql";
 
@@ -137,8 +128,12 @@ export const Repositories = ({ username }: { username: string }) => {
   return (
     <div className="py-4">
       <div className="flex gap-2">
-        <img src={user.avatarUrl} alt="" className="size-5 rounded-full" />
-        <span>Hello {user.login}!</span>
+        {user && (
+          <>
+            <img src={user.avatarUrl} alt="" className="size-5 rounded-full" />
+            <span>Hello {user.login}!</span>
+          </>
+        )}
       </div>
       <div className="flex flex-col md:flex-row w-full md:justify-between">
         <div>
