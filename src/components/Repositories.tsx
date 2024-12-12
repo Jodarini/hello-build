@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { FavoriteStar } from "./FavoriteStar";
 
 interface Repository {
   id: string;
@@ -229,7 +230,7 @@ const Repository = ({
 }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const handleChange = () => {
+  const handleClick = () => {
     setIsFavorite(!isFavorite);
     setFavRepos((prevRepos) => {
       if (isFavorite) {
@@ -244,7 +245,9 @@ const Repository = ({
       <div className="flex gap-2 justify-between">
         <p>{name}</p>
         {checkbox && (
-          <input type="checkbox" checked={isFavorite} onChange={handleChange} />
+          <button onClick={handleClick}>
+            <FavoriteStar favorite={isFavorite} />
+          </button>
         )}
       </div>
     </div>
