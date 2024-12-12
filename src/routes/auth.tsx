@@ -12,7 +12,8 @@ function RouteComponent() {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
   const url = `https://github.com/login/oauth/access_token?client_id=${import.meta.env.VITE_APP_CLIENT_ID}&client_secret=${import.meta.env.VITE_APP_GITHUB_SECRET}&code=${code}`;
-  const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
+  const proxyUrl = `https://thingproxy.freeboard.io/fetch/${url}`;
+
   useEffect(() => {
     const getAccessToken = async () => {
       const response = await fetch(proxyUrl, {
