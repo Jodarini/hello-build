@@ -2,9 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAuth } from "../auth";
 
-const CLIENT_ID = "Ov23liLxtAgLqEAyYmGN";
-const CLIENT_SECRET = import.meta.env.VITE_APP_GITHUB_SECRET;
-
 export const Route = createFileRoute("/auth")({
   component: RouteComponent,
 });
@@ -14,7 +11,7 @@ function RouteComponent() {
   const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
-  const url = `https://github.com/login/oauth/access_token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${code}`;
+  const url = `https://github.com/login/oauth/access_token?client_id=${import.meta.env.VITE_APP_CLIENT_ID}&client_secret=${import.meta.env.VITE_APP_GITHUB_SECRET}&code=${code}`;
   const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
   useEffect(() => {
     const getAccessToken = async () => {
