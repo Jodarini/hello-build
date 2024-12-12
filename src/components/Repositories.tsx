@@ -187,6 +187,7 @@ export const Repositories = ({ username }: { username: string }) => {
               <Repository
                 key={repo.id}
                 name={repo.name}
+                id={repo.id}
                 setFavRepos={setFavRepos}
                 checkbox
               />
@@ -204,6 +205,7 @@ export const Repositories = ({ username }: { username: string }) => {
                 <Repository
                   key={repo.id + "fav"}
                   name={repo.name}
+                  id={repo.id}
                   setFavRepos={setFavRepos}
                 />
               ))
@@ -216,10 +218,12 @@ export const Repositories = ({ username }: { username: string }) => {
 
 const Repository = ({
   name,
+  id,
   setFavRepos,
   checkbox,
 }: {
   name: string;
+  id: string;
   setFavRepos: Dispatch<SetStateAction<Repository[]>>;
   checkbox: boolean;
 }) => {
@@ -231,7 +235,7 @@ const Repository = ({
       if (isFavorite) {
         return prevRepos?.filter((repo) => repo.name !== name);
       } else {
-        return [...(prevRepos || []), { name: name }];
+        return [...(prevRepos || []), { name: name, id: id }];
       }
     });
   };
