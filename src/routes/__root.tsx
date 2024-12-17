@@ -1,8 +1,16 @@
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  Link,
+  Outlet,
+  useRouter,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
-export const Route = createRootRoute({
-  component: () => (
+const RootComponent = () => {
+  const router = useRouter();
+  const currentURL = router.state.location.href;
+  console.log(currentURL);
+  return (
     <>
       <div className="p-2 flex gap-2">
         <Link
@@ -11,22 +19,28 @@ export const Route = createRootRoute({
         >
           Home
         </Link>
-        <Link
-          to="/sign-up"
-          className=" block py-4 px-2  sm:px-0 sm:py-0 sm:inline-block sm:mt-0 active:bg-active active:text-white sm:active:bg-transparent  border-b-2 border-transparent [&.active]:font-bold"
-        >
-          Sign up
-        </Link>
-        <Link
-          to="/login"
-          className=" block py-4 px-2  sm:px-0 sm:py-0 sm:inline-block sm:mt-0 active:bg-active active:text-white sm:active:bg-transparent  border-b-2 border-transparent [&.active]:font-bold"
-        >
-          Sign in
-        </Link>
+        <>
+          <Link
+            to="/sign-up"
+            className=" block py-4 px-2  sm:px-0 sm:py-0 sm:inline-block sm:mt-0 active:bg-active active:text-white sm:active:bg-transparent  border-b-2 border-transparent [&.active]:font-bold"
+          >
+            Sign up
+          </Link>
+          <Link
+            to="/login"
+            className=" block py-4 px-2  sm:px-0 sm:py-0 sm:inline-block sm:mt-0 active:bg-active active:text-white sm:active:bg-transparent  border-b-2 border-transparent [&.active]:font-bold"
+          >
+            Sign in
+          </Link>
+        </>
       </div>
       <hr />
       <Outlet />
       <TanStackRouterDevtools />
     </>
-  ),
+  );
+};
+
+export const Route = createRootRoute({
+  component: RootComponent,
 });

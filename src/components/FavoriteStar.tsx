@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-
 export const FavoriteStar = ({ favorite }: { favorite: boolean }) => {
   if (!favorite)
     return (
