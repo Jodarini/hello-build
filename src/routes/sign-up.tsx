@@ -44,7 +44,7 @@ function RouteComponent() {
           className="min-w-fit rounded-full w-full font-bold bg-primary text-center active:bg-active lg:text-base text-base bg-[#172c45] text-white py-4"
           type="submit"
         >
-          Sign Up
+          Sign up
         </button>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
