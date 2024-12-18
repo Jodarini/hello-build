@@ -262,9 +262,7 @@ export const Repositories = ({ username }: { username: string }) => {
             <div className="min-w-full md:min-w-72">
               {favorites && favorites.length > 0
                 ? favorites.map((repo) => (
-                    <>
-                      <Repository key={repo.id + "fav"} repository={repo} />
-                    </>
+                    <Repository key={repo.id + "fav"} repository={repo} />
                   ))
                 : "No favorites yet 😢"}
             </div>
