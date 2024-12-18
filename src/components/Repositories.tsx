@@ -173,6 +173,14 @@ export const Repositories = ({ username }: { username: string }) => {
           : repo,
       ),
     );
+
+    setRepositories((prevRepos) =>
+      prevRepos?.map((repo) =>
+        repo.id === repository.id
+          ? { ...repo, favorite: !repo.favorite }
+          : repo,
+      ),
+    );
   };
 
   const favorites = filteredRepositories?.filter((repo) => repo.favorite);
