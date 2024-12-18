@@ -1,15 +1,7 @@
-import {
-  createRootRoute,
-  Link,
-  Outlet,
-  useRouter,
-} from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 const RootComponent = () => {
-  const router = useRouter();
-  const currentURL = router.state.location.href;
-  console.log(currentURL);
   return (
     <>
       <div className="p-2 flex gap-2">
