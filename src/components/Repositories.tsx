@@ -10,6 +10,15 @@ import { FavoriteStar } from "./FavoriteStar";
 interface Repository {
   id: string;
   name: string;
+  createdAt: string;
+  languages: {
+    nodes: [
+      {
+        id: string;
+        name: string;
+      },
+    ];
+  };
 }
 
 interface User {
@@ -96,11 +105,19 @@ export const Repositories = ({ username }: { username: string }) => {
     const GITHUB_ENDPOINT = "https://api.github.com/graphql";
 
     const query = `{
-      user(login: "${login}") {
-        repositories(last: 50) {
-          nodes {
+      viewer {
+        login
+        repositories(last: 30){
+          nodes{
             id
             name
+            createdAt
+            languages(first: 5) {
+              nodes{
+                id
+                name
+              }
+            }
           }
         }
       }
@@ -121,7 +138,7 @@ export const Repositories = ({ username }: { username: string }) => {
       }
 
       const data = await response.json();
-      return data.data.user.repositories.nodes;
+      return data.data.viewer.repositories.nodes;
     } catch (error) {
       console.error("Error fetching repositories: ", error);
     } finally {
@@ -187,8 +204,7 @@ export const Repositories = ({ username }: { username: string }) => {
             filteredRepos.map((repo) => (
               <Repository
                 key={repo.id}
-                name={repo.name}
-                id={repo.id}
+                repository={repo}
                 setFavRepos={setFavRepos}
                 checkbox
               />
@@ -203,12 +219,14 @@ export const Repositories = ({ username }: { username: string }) => {
           </h2>
           {favRepos && favRepos.length > 0
             ? favRepos.map((repo) => (
-                <Repository
-                  key={repo.id + "fav"}
-                  name={repo.name}
-                  id={repo.id}
-                  setFavRepos={setFavRepos}
-                />
+                <>
+                  {console.log(repo)}
+                  <Repository
+                    key={repo.id + "fav"}
+                    repository={repo}
+                    setFavRepos={setFavRepos}
+                  />
+                </>
               ))
             : "No favorites yet 😢"}
         </div>
@@ -218,11 +236,11 @@ export const Repositories = ({ username }: { username: string }) => {
 };
 
 const Repository = ({
-  name,
-  id,
+  repository,
   setFavRepos,
   checkbox,
 }: {
+  repository: Repository;
   name: string;
   id: string;
   setFavRepos: Dispatch<SetStateAction<Repository[]>>;
@@ -234,16 +252,35 @@ const Repository = ({
     setIsFavorite(!isFavorite);
     setFavRepos((prevRepos) => {
       if (isFavorite) {
-        return prevRepos?.filter((repo) => repo.name !== name);
+        return prevRepos?.filter((repo) => repo.name !== repository.name);
       } else {
-        return [...(prevRepos || []), { name: name, id: id }];
+        return [
+          ...(prevRepos || []),
+          {
+            ...repository,
+            id: repository.id + "fav",
+          },
+        ];
       }
     });
   };
+
   return (
-    <div className="py-4 px-2 bg-slate-50 shadow mb-2">
-      <div className="flex gap-2 justify-between">
-        <p>{name}</p>
+    <div className="py-4 px-2 mb-2 border-b border-b-slate-300">
+      <div className="flex justify-between">
+        <div className="flex flex-col justify-between text-left gap-4">
+          <p>{repository.name}</p>
+          <div className="flex gap-1 text-xs">
+            {repository.languages.nodes.map((language) => (
+              <span
+                key={language.id + repository.name}
+                className="rounded-full bg-cyan-700 text-white px-2"
+              >
+                {language.name}
+              </span>
+            ))}
+          </div>
+        </div>
         {checkbox && (
           <button onClick={handleClick}>
             <FavoriteStar favorite={isFavorite} />
