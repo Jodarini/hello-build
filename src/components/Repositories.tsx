@@ -234,7 +234,10 @@ export const Repositories = ({ username }: { username: string }) => {
           {viewMode === "all" ? (
             <>
               {loading ? (
-                <div role="status">
+                <div
+                  role="status"
+                  className="w-full block justify-items-center p-8"
+                >
                   <svg
                     aria-hidden="true"
                     className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
@@ -268,11 +271,15 @@ export const Repositories = ({ username }: { username: string }) => {
             </>
           ) : (
             <div className="min-w-full md:min-w-72">
-              {favorites && favorites.length > 0
-                ? favorites.map((repo) => (
-                    <Repository key={repo.id + "fav"} repository={repo} />
-                  ))
-                : "No favorites yet 😢"}
+              {favorites && favorites.length > 0 ? (
+                favorites.map((repo) => (
+                  <Repository key={repo.id + "fav"} repository={repo} />
+                ))
+              ) : (
+                <span className="w-full block justify-items-center p-8 italic text-gray-400">
+                  Add favorites to see your list!
+                </span>
+              )}
             </div>
           )}
         </div>
