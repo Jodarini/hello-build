@@ -25,7 +25,7 @@ function RouteComponent() {
         <h1 className="text-2xl font-bold">Create your account</h1>
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-6 h-full justify-between min-w-96"
+          className="flex flex-col gap-6 h-full justify-between min-w-full md:min-w-96"
         >
           <div className="flex flex-col justify-start">
             <label
@@ -63,7 +63,7 @@ function RouteComponent() {
 
           <Link
             to="/login"
-            className="block py-4 px-2  sm:px-0 sm:py-0 sm:inline-block sm:mt-0 active:bg-active active:text-white sm:active:bg-transparent  border-b-2 border-transparent [&.active]:font-bold"
+            className="block px-2  sm:px-0 sm:py-0 sm:inline-block sm:mt-0 active:bg-active active:text-white sm:active:bg-transparent  border-b-2 border-transparent [&.active]:font-bold"
           >
             <button className="min-w-fit rounded-full w-full text-center active:bg-active lg:text-base text-base text-gray-700 py-4 border-2">
               Sign in

@@ -20,10 +20,10 @@ function Login() {
 
   return (
     <div className="w-full min-h-full flex flex-1 flex-col gap-6 justify-center items-center py-4">
-      <h1 className="text-2xl font-bold">Create your account</h1>
+      <h1 className="text-2xl font-bold">Sign in</h1>
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-6 h-full justify-between min-w-96"
+        className="flex flex-col gap-6 h-full justify-between min-w-full md:min-w-96"
       >
         <div className="flex flex-col justify-start">
           <label className="w-fit px-1 text-primary text-sm" htmlFor="username">
