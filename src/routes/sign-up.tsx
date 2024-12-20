@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { FormEvent, useState } from "react";
 import { useAuth } from "../auth";
 
@@ -8,15 +8,16 @@ export const Route = createFileRoute("/sign-up")({
 
 function RouteComponent() {
   const [username, setUsername] = useState("");
+  const [error, setError] = useState(undefined);
   const auth = useAuth();
-  const navigate = useNavigate();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const success = auth.signUp(username);
-    auth.signUp2(username);
-    if (success) {
-      navigate({ to: "/login" });
+    const res = await auth.signUp(username);
+    if (res.error) {
+      setError(res.error);
+    } else if (res.success) {
+      window.location.href = "http://localhost:5173/login";
     }
   };
 
@@ -28,7 +29,7 @@ function RouteComponent() {
           onSubmit={handleSubmit}
           className="flex flex-col gap-6 h-full justify-between min-w-full md:min-w-96"
         >
-          <div className="flex flex-col justify-start">
+          <div className="flex flex-col justify-start relative">
             <label
               className="w-fit px-1 text-primary text-sm"
               htmlFor="username"
@@ -36,7 +37,9 @@ function RouteComponent() {
               Username
             </label>
             <input
-              className="w-full appearance-none border-2 rounded-full py-2 px-3 font-normal text-primary text-sm "
+              className={`w-full border-2 focus:border-none focus-visible:border-none target:border-none rounded-full py-2 px-3 font-normal text-primary text-sm ${
+                error && "border-red-500"
+              }`}
               type="text"
               id="username"
               value={username}
@@ -44,6 +47,9 @@ function RouteComponent() {
               required
               placeholder="Enter your username"
             />
+            <span className="absolute bottom-[-1.2rem] text-xs text-red-500">
+              {error && <span>{error}</span>}
+            </span>
           </div>
           <button
             className="min-w-fit rounded-full w-full font-bold bg-primary text-center active:bg-active lg:text-base text-base bg-[#172c45] text-white py-4"
