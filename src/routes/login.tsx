@@ -12,10 +12,7 @@ function Login() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const isSignedIn = auth.signIn(username);
-    if (isSignedIn) {
-      auth.username = username;
-    }
+    auth.signIn(username);
   };
 
   return (

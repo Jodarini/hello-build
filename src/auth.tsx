@@ -3,7 +3,12 @@ import React, { createContext, useState } from "react";
 export interface AuthContext {
   username: string | null;
   isAuthenticated: boolean;
-  signUp: (username: string) => boolean;
+  signUp: (
+    username: string,
+  ) => Promise<
+    | { error: any; success?: undefined; data?: undefined }
+    | { success: boolean; data: any; error?: undefined }
+  >;
   signIn: (username: string) => boolean;
 }
 
@@ -11,42 +16,43 @@ const AuthContext = createContext<AuthContext | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [username, setUsername] = useState<string | null>(null);
-  let isAuthenticated = username ? true : false;
+  const isAuthenticated = username ? true : false;
 
-  const signUp = (newUsername: string) => {
-    const storedUsers = localStorage.getItem("users");
-    const users: string[] = storedUsers ? JSON.parse(storedUsers) : [];
+  const signUp = async (user: string) => {
+    try {
+      const res = await fetch("http://127.0.0.1:3000/createUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: user }),
+      });
 
-    if (users.some((user) => user === newUsername)) {
-      alert("User already exists");
-      return false;
+      if (!res.ok) {
+        const errorData = await res.json();
+        return { error: errorData.error || "Something went wrong on sign up" };
+      }
+
+      const data = await res.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error("Error on sign up: ", error);
+      return { error: "Unexpected error" };
     }
-
-    users.push(newUsername.trim());
-    localStorage.setItem("users", JSON.stringify(users));
-    setUsername(null);
-    return true;
   };
 
-  const signIn = (loginName: string) => {
-    const storedUsers = localStorage.getItem("users");
-    const users: string[] = storedUsers ? JSON.parse(storedUsers) : [];
-
-    if (users.some((user) => user === loginName)) {
-      setUsername(loginName);
-      const link = `https://github.com/login/oauth/authorize?client_id=${import.meta.env.VITE_APP_CLIENT_ID}&redirect_uri=http://localhost:5173/auth&login=${loginName}`;
-      isAuthenticated = true;
-      setUsername(loginName);
-      window.location.assign(link);
-      return true;
-    }
-    alert("User has not signed up");
-    return false;
+  const signIn = async (username: string) => {
+    window.location.href = `http://127.0.0.1:3000/login/${username}`;
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, username: username, signUp, signIn }}
+      value={{
+        isAuthenticated,
+        username: username,
+        signUp,
+        signIn,
+      }}
     >
       {children}
     </AuthContext.Provider>
