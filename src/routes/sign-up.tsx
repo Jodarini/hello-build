@@ -14,6 +14,7 @@ function RouteComponent() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const success = auth.signUp(username);
+    auth.signUp2(username);
     if (success) {
       navigate({ to: "/login" });
     }

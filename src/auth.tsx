@@ -5,6 +5,7 @@ export interface AuthContext {
   isAuthenticated: boolean;
   signUp: (username: string) => boolean;
   signIn: (username: string) => boolean;
+  signUp2: (username: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -12,6 +13,19 @@ const AuthContext = createContext<AuthContext | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [username, setUsername] = useState<string | null>(null);
   let isAuthenticated = username ? true : false;
+
+  const signUp2 = async (user: string) => {
+    const res = await fetch("http://127.0.0.1:3000/createUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Specify JSON format
+      },
+      body: JSON.stringify({ name: user }),
+    });
+
+    const data = await res.json();
+    return data;
+  };
 
   const signUp = (newUsername: string) => {
     const storedUsers = localStorage.getItem("users");
@@ -46,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, username: username, signUp, signIn }}
+      value={{ isAuthenticated, username: username, signUp, signIn, signUp2 }}
     >
       {children}
     </AuthContext.Provider>
