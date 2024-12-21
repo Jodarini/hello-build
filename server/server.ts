@@ -42,9 +42,8 @@ app.get("/login/:name", (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     const link = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=http://localhost:5173/auth&login=${username}`;
-    res.redirect(link);
 
-    return res.status(200);
+    return res.json({ url: link });
   });
 });
 

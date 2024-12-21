@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FormEvent, useState } from "react";
 import { useAuth } from "../auth";
+import Spinner from "../components/Spinner";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -8,11 +9,21 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const [username, setUsername] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(undefined);
   const auth = useAuth();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    auth.signIn(username);
+    setIsLoading(true);
+    const res = await auth.signIn(username);
+    const data = await res.json();
+    if (!res.ok) {
+      setError(res.statusText);
+    }
+
+    window.location.href = data.url;
+    setIsLoading(false);
   };
 
   return (
@@ -35,12 +46,21 @@ function Login() {
             required
             placeholder="Enter your username"
           />
+          {error && <span>{error}</span>}
         </div>
         <button
-          className="min-w-fit rounded-full w-full font-bold bg-primary text-center active:bg-active lg:text-base text-base bg-[#172c45] text-white py-4"
+          className={`min-w-fit rounded-full w-full font-bold bg-primary text-center active:bg-active lg:text-base text-base bg-[#172c45] text-white py-4 disabled:bg-gray-500/50`}
+          disabled={isLoading}
           type="submit"
         >
-          Sign in
+          {isLoading ? (
+            <div className="flex w-full items-center justify-center gap-2">
+              Signing in...
+              <Spinner />
+            </div>
+          ) : (
+            "Sign in"
+          )}
         </button>
       </form>
     </div>
