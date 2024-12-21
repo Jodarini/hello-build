@@ -6,10 +6,10 @@ export interface AuthContext {
   signUp: (
     username: string,
   ) => Promise<
-    | { error: any; success?: undefined; data?: undefined }
+    | { error: unknown; success?: undefined; data?: undefined }
     | { success: boolean; data: any; error?: undefined }
   >;
-  signIn: (username: string) => boolean;
+  signIn: (username: string) => Promise<Response | undefined>;
 }
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -42,7 +42,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (username: string) => {
-    window.location.href = `http://127.0.0.1:3000/login/${username}`;
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const res = await fetch(`http://127.0.0.1:3000/login/${username}`);
+      return res;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
