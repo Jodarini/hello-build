@@ -10,16 +10,18 @@ export const Route = createFileRoute("/login")({
 function Login() {
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
   const auth = useAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     const res = await auth.signIn(username);
-    const data = await res.json();
-    if (!res.ok) {
-      setError(res.statusText);
+    const data = await res!.json();
+    if (!res!.ok) {
+      setError(res!.statusText);
+      setIsLoading(false);
+      return;
     }
 
     window.location.href = data.url;
@@ -33,7 +35,7 @@ function Login() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-6 h-full justify-between min-w-full md:min-w-96"
       >
-        <div className="flex flex-col justify-start">
+        <div className="flex flex-col justify-start relative">
           <label className="w-fit px-1 text-primary text-sm" htmlFor="username">
             Username
           </label>
@@ -46,7 +48,10 @@ function Login() {
             required
             placeholder="Enter your username"
           />
-          {error && <span>{error}</span>}
+
+          <span className="absolute bottom-[-1.2rem] text-xs text-red-500">
+            {error && <span>{error}</span>}
+          </span>
         </div>
         <button
           className={`min-w-fit rounded-full w-full font-bold bg-primary text-center active:bg-active lg:text-base text-base bg-[#172c45] text-white py-4 disabled:bg-gray-500/50`}
