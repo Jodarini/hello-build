@@ -1,157 +1,15 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { FavoriteStar } from "./FavoriteStar";
-
-interface Repository {
-  id: string;
-  name: string;
-  createdAt: string;
-  favorite: boolean;
-  languages: {
-    nodes: [
-      {
-        id: string;
-        name: string;
-      },
-    ];
-  };
-}
-
-interface User {
-  login: string;
-  avatarUrl: string;
-}
+import useRepositories from "../hooks/useRepositories";
+import useUser from "../hooks/useUser";
 
 type ViewMode = "all" | "favorites";
 
-export const Repositories = ({ username }: { username: string }) => {
-  const [repositories, setRepositories] = useState<Repository[] | undefined>(
-    [],
-  );
-
-  const [filteredRepositories, setFilteredRepositories] = useState<
-    Repository[] | undefined
-  >([]);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+export const Repositories = () => {
   const [searchInput, setSearchInput] = useState("");
-  const [user, setUser] = useState<User>();
-  const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("all");
-
-  useEffect(() => {
-    const checkAccessToken = () => {
-      const token = localStorage.getItem("access_token");
-      if (token) {
-        setAccessToken(token);
-      }
-    };
-
-    checkAccessToken();
-    const intervalId = setInterval(checkAccessToken, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userData = await getUser();
-        if (userData) {
-          const repos = (await getUsersRepositories()) as Repository[];
-          setRepositories(repos.map((repo) => ({ ...repo, favorite: false })));
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    const getUser = async () => {
-      const GITHUB_ENDPOINT = "https://api.github.com/graphql";
-
-      const query = `{
-      viewer {
-        login
-        avatarUrl
-      }
-    }`;
-
-      try {
-        const response = await fetch(GITHUB_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ query }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setUser(data.data.viewer);
-        return data;
-      } catch (error) {
-        console.error("Error getting user:", error);
-      }
-    };
-
-    const getUsersRepositories = async () => {
-      setLoading(true);
-      const GITHUB_ENDPOINT = "https://api.github.com/graphql";
-
-      const query = `{
-      viewer {
-        login
-        repositories(last: 30){
-          nodes{
-            id
-            name
-            createdAt
-            languages(first: 5) {
-              nodes{
-                id
-                name
-              }
-            }
-          }
-        }
-      }
-    }`;
-
-      try {
-        const response = await fetch(GITHUB_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ query }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.data.viewer.repositories.nodes;
-      } catch (error) {
-        console.error("Error fetching repositories: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (accessToken) {
-      fetchUserData();
-    }
-  }, [accessToken, username]);
-
-  useEffect(() => {
-    setFilteredRepositories(
-      repositories?.filter((repo) =>
-        repo.name.toLowerCase().includes(searchInput.toLowerCase()),
-      ),
-    );
-  }, [repositories, searchInput]);
+  const userData = useUser();
+  const repoData = useRepositories();
 
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -165,37 +23,23 @@ export const Repositories = ({ username }: { username: string }) => {
     }
   };
 
-  const toggleFavorite = (repository: Repository) => {
-    setFilteredRepositories((prevRepos) =>
-      prevRepos?.map((repo) =>
-        repo.id === repository.id
-          ? { ...repo, favorite: !repo.favorite }
-          : repo,
-      ),
-    );
-
-    setRepositories((prevRepos) =>
-      prevRepos?.map((repo) =>
-        repo.id === repository.id
-          ? { ...repo, favorite: !repo.favorite }
-          : repo,
-      ),
-    );
-  };
+  const filteredRepositories = repoData.repositories?.filter((repo) =>
+    repo.name.toLowerCase().includes(searchInput.toLowerCase()),
+  );
 
   const favorites = filteredRepositories?.filter((repo) => repo.favorite);
 
   return (
     <div className="flex flex-col gap-4 py-4">
       <div className="flex gap-2">
-        {user && (
+        {userData.user && (
           <>
             <img
-              src={user.avatarUrl}
-              alt={user.login}
+              src={userData.user.avatarUrl}
+              alt={userData.user.login}
               className="size-5 rounded-full"
             />
-            <span>Hello {user.login}!</span>
+            <span>Hello {userData.user.login}!</span>
           </>
         )}
       </div>
@@ -233,7 +77,7 @@ export const Repositories = ({ username }: { username: string }) => {
           />
           {viewMode === "all" ? (
             <>
-              {loading ? (
+              {repoData.isLoading ? (
                 <div
                   role="status"
                   className="w-full block justify-items-center p-8"
@@ -261,7 +105,7 @@ export const Repositories = ({ username }: { username: string }) => {
                   <Repository
                     key={repo.id}
                     repository={repo}
-                    toggleFavorite={toggleFavorite}
+                    toggleFavorite={repoData.toggleFavorite}
                     checkbox
                   />
                 ))
@@ -294,7 +138,7 @@ const Repository = ({
   checkbox,
 }: {
   repository: Repository;
-  toggleFavorite?: (repository: Repository) => void;
+  toggleFavorite?: (id: string) => void;
   checkbox?: boolean;
 }) => {
   return (
@@ -314,7 +158,7 @@ const Repository = ({
           </div>
         </div>
         {checkbox && toggleFavorite && (
-          <button onClick={() => toggleFavorite(repository)}>
+          <button onClick={() => toggleFavorite(repository.id)}>
             <FavoriteStar favorite={repository.favorite} />
           </button>
         )}
