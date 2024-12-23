@@ -15,21 +15,20 @@ function RouteComponent() {
   const proxyUrl = `https://thingproxy.freeboard.io/fetch/${url}`;
 
   useEffect(() => {
-    const getAccessToken = async () => {
-      const response = await fetch(proxyUrl, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-        },
-      });
-      const data = await response.json();
-      const access_token = await data.access_token;
-      localStorage.setItem("access_token", access_token);
-
-      auth.isAuthenticated = true;
-      navigate({ to: "/dashboard" });
+    const handleAuth = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:3000/getToken/${code}`);
+        const data = await response.json();
+        if (data.accessToken) {
+          localStorage.setItem("access_token", data.accessToken);
+          auth.setIsAuthenticated(true);
+        }
+        navigate({ to: "/dashboard" });
+      } catch (err) {
+        throw new Error(err);
+      }
     };
-    getAccessToken();
-  }, [auth, navigate, proxyUrl]);
+    handleAuth();
+  }, [auth, code, navigate, proxyUrl]);
   return <div>Hello "/_auth"!</div>;
 }
