@@ -1,13 +1,13 @@
 import React, { createContext, useState } from "react";
 
 export interface AuthContext {
-  username: string | null;
   isAuthenticated: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   signUp: (
     username: string,
   ) => Promise<
     | { error: unknown; success?: undefined; data?: undefined }
-    | { success: boolean; data: any; error?: undefined }
+    | { success: boolean; data: unknown; error?: undefined }
   >;
   signIn: (username: string) => Promise<Response | undefined>;
 }
@@ -15,8 +15,7 @@ export interface AuthContext {
 const AuthContext = createContext<AuthContext | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [username, setUsername] = useState<string | null>(null);
-  const isAuthenticated = username ? true : false;
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const signUp = async (user: string) => {
     try {
@@ -55,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        username: username,
+        setIsAuthenticated,
         signUp,
         signIn,
       }}
